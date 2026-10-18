@@ -1,5 +1,7 @@
+mod exportar;
 mod framebuffer;
 mod mesh;
+mod nave;
 
 use framebuffer::Framebuffer;
 use minifb::{Key, Window, WindowOptions};
@@ -9,6 +11,13 @@ const ANCHO: usize = 800;
 const ALTO: usize = 600;
 
 fn main() {
+    if std::env::args().any(|a| a == "--exportar") {
+        let modelo = nave::construir();
+        let (vertices, triangulos) = exportar::guardar(&modelo, "nave.obj").expect("no se pudo exportar");
+        println!("nave.obj: {} vertices, {} triangulos", vertices, triangulos);
+        return;
+    }
+
     let mut framebuffer = Framebuffer::new(ANCHO, ALTO);
     let mut window = Window::new("Lab 3 - Nave", ANCHO, ALTO, WindowOptions::default()).unwrap();
     framebuffer.set_background_color(0x14141E);
