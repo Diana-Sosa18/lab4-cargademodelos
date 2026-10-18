@@ -1,5 +1,4 @@
 use nalgebra_glm::{self as glm, Vec3};
-use std::collections::HashMap;
 
 pub struct Cara {
     pub indices: Vec<usize>,
@@ -211,8 +210,9 @@ impl Mesh {
         a.dot(&b).clamp(-1.0, 1.0).acos()
     }
 
+    #[cfg(test)]
     pub fn bordes_abiertos(&self) -> usize {
-        let mut conteo: HashMap<(usize, usize), i32> = HashMap::new();
+        let mut conteo: std::collections::HashMap<(usize, usize), i32> = std::collections::HashMap::new();
         for c in &self.caras {
             let t = c.indices.len();
             for k in 0..t {
