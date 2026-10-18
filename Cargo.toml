@@ -1,0 +1,11 @@
+[package]
+name = "lab3graficas"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+minifb = "0.27"
+nalgebra-glm = "0.19"
+
+[profile.release]
+opt-level = 3
