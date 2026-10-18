@@ -1,4 +1,5 @@
 mod framebuffer;
+mod mesh;
 
 use framebuffer::Framebuffer;
 use minifb::{Key, Window, WindowOptions};
