@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 minifb = "0.27"
 nalgebra-glm = "0.19"
+gif = "0.13"
 
 [profile.release]
 opt-level = 3
