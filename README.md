@@ -28,6 +28,24 @@ Materiales (solo color base): Casco gris, Cabina azul, Motor naranja y Detalle r
 
 Al exportar, cada cara se triangula y se escriben coordenadas UV y normales; no se exportan colores por vértice ni curvas.
 
+## Proyecto 1 - Ejercicio 1: render del modelo
+
+![Render de la nave](render.png)
+
+La nave del lab anterior (`nave.obj`) se carga y se pinta en pantalla con la función propia para dibujar triángulos:
+
+1. `src/obj.rs` lee el archivo línea por línea: guarda cada `v` en la lista de vértices y, por cada `f`, toma los índices de sus vértices (restando 1, porque el OBJ empieza en 1).
+2. `render` en `src/main.rs` recorre manualmente las caras, usa esos tres índices para obtener los tres vértices del triángulo y los transforma a coordenadas de pantalla.
+3. Cada triángulo se dibuja con `triangle::triangle` en el framebuffer.
+
+El modelo queda en el centro de la pantalla: se calcula el centro de su silueta proyectada y se traslada al centro de la ventana. El tamaño se ajusta según el radio del modelo para que ocupe alrededor del 60% del ancho sin salirse, sin importar cómo esté rotado.
+
+Para generar la imagen:
+
+```bash
+cargo run --release -- --captura
+```
+
 ## Render
 
 El programa lee `nave.obj` y `nave.mtl`, transforma los vértices con matrices de `nalgebra-glm` y rasteriza los triángulos con coordenadas baricéntricas en un framebuffer propio con z-buffer, que se muestra con `minifb`. Cada cara usa el color de su material con iluminación plana según su normal.
@@ -52,7 +70,7 @@ cargo run --release -- --gif
 cargo run --release -- --captura
 ```
 
-`--exportar` vuelve a generar `nave.obj` y `nave.mtl` desde el cubo, `--gif` genera `nave.gif` y `--captura` guarda `captura.bmp` (se puede combinar con `--wireframe`).
+`--exportar` vuelve a generar `nave.obj` y `nave.mtl` desde el cubo, `--gif` genera `nave.gif` y `--captura` guarda `render.png` (se puede combinar con `--wireframe`).
 
 ## Controles
 
@@ -62,7 +80,7 @@ cargo run --release -- --captura
 | W / S | Acercar / alejar |
 | Espacio | Alternar relleno y wireframe |
 | R | Activar / detener giro automático |
-| P | Guardar `captura.bmp` |
+| P | Guardar `captura.png` |
 | Esc | Salir |
 
 ## Estructura
@@ -76,7 +94,7 @@ cargo run --release -- --captura
 | `src/obj.rs` | Carga de `.obj` y `.mtl` |
 | `src/triangle.rs` | Líneas (Bresenham) y rasterizado de triángulos |
 | `src/framebuffer.rs` | Framebuffer con z-buffer |
-| `src/bmp.rs` | Capturas en BMP |
+| `src/imagen.rs` | Imágenes PNG del render |
 | `src/animacion.rs` | Generación del GIF |
 
 ## Pruebas
