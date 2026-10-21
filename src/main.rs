@@ -1,5 +1,5 @@
 mod animacion;
-mod bmp;
+mod imagen;
 mod exportar;
 mod framebuffer;
 mod mesh;
@@ -94,7 +94,7 @@ fn main() {
 
     if tiene("--captura") {
         render(&mut framebuffer, &modelo, &camara, centro);
-        bmp::guardar(&framebuffer, "captura.bmp").unwrap();
+        imagen::guardar_png(&framebuffer, "render.png").unwrap();
         return;
     }
 
@@ -111,7 +111,7 @@ fn main() {
     }
 
     let mut window = Window::new(
-        "Lab 3 - Nave | Flechas: rotar  W/S: zoom  Espacio: wireframe  R: girar  P: captura",
+        "Lab 3 - Nave | Flechas: rotar  W/S: zoom  Espacio: wireframe  R: girar  P: captura PNG",
         ANCHO,
         ALTO,
         WindowOptions::default(),
@@ -151,7 +151,7 @@ fn main() {
         render(&mut framebuffer, &modelo, &camara, centro);
 
         if window.is_key_pressed(Key::P, KeyRepeat::No) {
-            bmp::guardar(&framebuffer, "captura.bmp").unwrap();
+            imagen::guardar_png(&framebuffer, "captura.png").unwrap();
         }
 
         window.update_with_buffer(&framebuffer.buffer, ANCHO, ALTO).unwrap();

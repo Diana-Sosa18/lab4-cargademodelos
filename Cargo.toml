@@ -7,6 +7,7 @@ edition = "2021"
 minifb = "0.27"
 nalgebra-glm = "0.19"
 gif = "0.13"
+png = "0.17"
 
 [profile.release]
 opt-level = 3
