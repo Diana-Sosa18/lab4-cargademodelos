@@ -1,4 +1,4 @@
-# lab3graficas
+# lab4-cargademodelos
 
 Nave espacial simple modelada a partir de un único cubo, exportada como OBJ triangulado y dibujada en pantalla con un renderer por software. Todo está hecho en Rust.
 
