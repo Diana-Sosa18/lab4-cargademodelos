@@ -36,16 +36,27 @@ struct Camara {
     girar: bool,
 }
 
-fn render(framebuffer: &mut Framebuffer, modelo: &Obj, camara: &Camara, centro: Vec3, tamano: f32) {
+fn render(framebuffer: &mut Framebuffer, modelo: &Obj, camara: &Camara, centro: Vec3) {
     let rotacion = glm::rotate_x(&Mat4::identity(), camara.rot_x)
         * glm::rotate_y(&Mat4::identity(), camara.rot_y)
         * glm::translate(&Mat4::identity(), &-centro);
-    let escala = ALTO as f32 * 0.75 / tamano * camara.zoom;
+    let girados: Vec<Vec3> = modelo.vertices.iter().map(|v| aplicar(&rotacion, v)).collect();
+
+    let radio = girados.iter().map(|v| v.norm()).fold(0.0, f32::max);
+    let escala = ANCHO.min(ALTO) as f32 * 0.55 / radio * camara.zoom;
+    let (mut min_x, mut max_x, mut min_y, mut max_y) = (f32::MAX, f32::MIN, f32::MAX, f32::MIN);
+    for v in &girados {
+        min_x = min_x.min(v.x);
+        max_x = max_x.max(v.x);
+        min_y = min_y.min(v.y);
+        max_y = max_y.max(v.y);
+    }
+    let medio = Vec3::new((min_x + max_x) / 2.0, (min_y + max_y) / 2.0, 0.0);
     let pantalla = glm::translate(&Mat4::identity(), &Vec3::new(ANCHO as f32 / 2.0, ALTO as f32 / 2.0, 0.0))
-        * glm::scale(&Mat4::identity(), &Vec3::new(escala, -escala, escala));
+        * glm::scale(&Mat4::identity(), &Vec3::new(escala, -escala, escala))
+        * glm::translate(&Mat4::identity(), &-medio);
 
     let luz = Vec3::new(0.4, 0.7, 1.0).normalize();
-    let girados: Vec<Vec3> = modelo.vertices.iter().map(|v| aplicar(&rotacion, v)).collect();
     let proyectados: Vec<Vec3> = girados.iter().map(|v| aplicar(&pantalla, v)).collect();
 
     framebuffer.clear();
@@ -76,13 +87,13 @@ fn main() {
     }
 
     let modelo = Obj::cargar("nave.obj").expect("no se pudo cargar nave.obj");
-    let (centro, tamano) = modelo.centro_y_tamano();
+    let (centro, _) = modelo.centro_y_tamano();
     let mut camara = Camara { rot_x: 0.5, rot_y: 0.8, zoom: 1.0, wireframe: tiene("--wireframe"), girar: false };
     let mut framebuffer = Framebuffer::new(ANCHO, ALTO);
     framebuffer.set_background_color(0x14141E);
 
     if tiene("--captura") {
-        render(&mut framebuffer, &modelo, &camara, centro, tamano);
+        render(&mut framebuffer, &modelo, &camara, centro);
         bmp::guardar(&framebuffer, "captura.bmp").unwrap();
         return;
     }
@@ -92,7 +103,7 @@ fn main() {
         let cuadros = 60;
         for k in 0..cuadros {
             camara.rot_y = 0.8 + std::f32::consts::TAU * k as f32 / cuadros as f32;
-            render(&mut framebuffer, &modelo, &camara, centro, tamano);
+            render(&mut framebuffer, &modelo, &camara, centro);
             gif.agregar(&framebuffer, 6).unwrap();
         }
         println!("nave.gif: {} cuadros", cuadros);
@@ -137,7 +148,7 @@ fn main() {
             camara.rot_y += 0.015;
         }
 
-        render(&mut framebuffer, &modelo, &camara, centro, tamano);
+        render(&mut framebuffer, &modelo, &camara, centro);
 
         if window.is_key_pressed(Key::P, KeyRepeat::No) {
             bmp::guardar(&framebuffer, "captura.bmp").unwrap();
